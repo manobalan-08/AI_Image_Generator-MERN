@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import SearchBar from "../components/SearchBar";
 import ImageCard from "../components/ImageCard";
+import { getAllPosts, searchPosts } from "../api/index.js";
 
 const Container = styled.div`
   height: 100%;
@@ -67,13 +68,54 @@ const CardWrapper = styled.div`
   }
 `;
 
-const Home = () => {
+const LoadingText = styled.div`
+  font-size: 18px;
+  color: ${({ theme }) => theme.text_secondary};
+  text-align: center;
+`;
 
-  const item = {
-    photo: "https://i.pinimg.com/736x/39/e1/2f/39e12f6e6b51eccb7bdb929681043141.jpg",
-    author: "Manobalan",
-    prompt: "I am Marcus Aurelius!",
-  }
+const Home = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllPosts();
+      if (response.data.success) {
+        setPosts(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async (term) => {
+    setSearchTerm(term);
+    if (!term.trim()) {
+      fetchPosts();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await searchPosts(term);
+      if (response.data.success) {
+        setPosts(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error searching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container>
@@ -81,12 +123,19 @@ const Home = () => {
         Explore popular posts in the Community!
         <Span>⦾ Generated with AI ⦾</Span>
       </Headline>
-      <SearchBar />
+      <SearchBar onSearch={handleSearch} />
       <Wrapper>
-        <CardWrapper>
-          <ImageCard item={item} />
-
-        </CardWrapper>
+        {loading ? (
+          <LoadingText>Loading posts...</LoadingText>
+        ) : posts.length > 0 ? (
+          <CardWrapper>
+            {posts.map((post, index) => (
+              <ImageCard key={index} item={post} />
+            ))}
+          </CardWrapper>
+        ) : (
+          <LoadingText>No posts found. Create one!</LoadingText>
+        )}
       </Wrapper>
     </Container>
   );

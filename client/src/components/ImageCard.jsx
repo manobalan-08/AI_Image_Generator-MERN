@@ -2,7 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { DownloadForOfflineRounded } from "@mui/icons-material";
-import { FileSaver } from "file-saver";
+import { saveAs } from "file-saver";
+import Avatar from "@mui/material/Avatar";
 
 const Card = styled.div`
   position: relative;
@@ -60,6 +61,53 @@ const Author = styled.div`
 `;
 
 const ImageCard = ({ item }) => {
+  const handleDownload = async (e) => {
+    e.stopPropagation();
+    console.log("download url:", item?.photo);
+    const url = item?.photo;
+    if (!url) return;
+
+    const filename = (item?.prompt && item.prompt.replace(/[^a-z0-9]/gi, "_").slice(0, 20)) || "download";
+
+    // If it's a data URL, convert via fetch then save
+    if (url.startsWith("data:")) {
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        saveAs(blob, `${filename}.jpg`);
+        return;
+      } catch (err) {
+        console.error("Data URL download failed:", err);
+      }
+    }
+
+    // Try fetching the resource and saving as blob (best for same-origin/CORS-enabled)
+    try {
+      const res = await fetch(url, { mode: 'cors' });
+      if (!res.ok) throw new Error("Network response was not ok");
+      const blob = await res.blob();
+      saveAs(blob, `${filename}.jpg`);
+      return;
+    } catch (err) {
+      console.warn("Fetch failed, attempting anchor fallback:", err);
+    }
+
+    // Anchor fallback: may work for some cross-origin URLs (browser-dependent)
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filename}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      console.log('Anchor download attempted');
+      return;
+    } catch (err) {
+      console.error('Anchor download failed:', err);
+      console.error('If this is a cross-origin URL blocked by CORS, enable CORS on the image server or proxy the image through your backend.');
+    }
+  };
+
   return (
     <Card>
       <LazyLoadImage
@@ -76,10 +124,10 @@ const ImageCard = ({ item }) => {
 
         }}>
           <Author>
-            <Avatar style={{ width: "32px", height: "32px" }}>{item?.author[0]}</Avatar>
-            {item?.author}
+            <Avatar style={{ width: "32px", height: "32px" }}>{item?.name ? item.name[0] : "A"}</Avatar>
+            {item?.name}
           </Author>
-          <DownloadRounded onClick={() => FileSaver.saveAs(item?.photo, "download.jpg")} />
+          <DownloadForOfflineRounded onClick={handleDownload} style={{ cursor: "pointer" }} />
         </div>
       </HoverOverlay>
     </Card>

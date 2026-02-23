@@ -26,7 +26,7 @@ const Navbar = () => {
 
     return (
         <Container>
-            GenAI
+            Creato Genera
             {path[1] === "post" ? (
                 <Button
                     onClick={() => navigate("/")}

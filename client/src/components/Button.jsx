@@ -39,8 +39,8 @@ const StyledButton = styled.div`
   }
   `}
 
-  ${({ isDisabled }) =>
-    isDisabled &&
+  ${({ $isDisabled }) =>
+    $isDisabled &&
     `
   opacity: 0.4;
   cursor: not-allowed;
@@ -75,7 +75,7 @@ const Button = ({
     <StyledButton
       onClick={!isDisabled && !isLoading ? onClick : null}
       type={type}
-      isDisabled={isDisabled}
+      $isDisabled={isDisabled}
       $isLoading={isLoading}
       $flex={flex}
     >

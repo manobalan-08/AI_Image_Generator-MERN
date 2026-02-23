@@ -3,6 +3,8 @@ import styled from "styled-components";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import { AutoAwesome, CreateRounded } from "@mui/icons-material";
+import GeneratedImageCard from "../components/GeneratedImageCard";
+import { generateAIImage, createPost as createPostAPI } from "../api/index.js";
 
 const Container = styled.div`
   height: 100%;
@@ -43,11 +45,63 @@ const GenerateImage = styled.div`
 `;
 
 const CreatePost = () => {
+    const [generateImageLoading, setGenerateImageLoading] = useState(false);
+    const [createPostLoading, setCreatePostLoading] = useState(false);
     const [post, setPost] = useState({
         name: "",
         prompt: "",
         image: "",
     });
+
+    const generateImage = async () => {
+        if (!post.prompt.trim()) {
+            alert("Please enter a prompt");
+            return;
+        }
+
+        setGenerateImageLoading(true);
+        try {
+            const response = await generateAIImage(post.prompt);
+            if (response.data.success) {
+                setPost({ ...post, image: response.data.photo });
+            }
+        } catch (error) {
+            console.error("Error generating image:", error);
+            alert("Error generating image. Please try again.");
+        } finally {
+            setGenerateImageLoading(false);
+        }
+    };
+
+    const createPost = async () => {
+        if (!post.name.trim() || !post.prompt.trim() || !post.image) {
+            alert("Please fill in all fields and generate an image first");
+            return;
+        }
+
+        setCreatePostLoading(true);
+        try {
+            const response = await createPostAPI({
+                name: post.name,
+                prompt: post.prompt,
+                photo: post.image,
+            });
+
+            if (response.data.success) {
+                alert("Post created successfully!");
+                setPost({
+                    name: "",
+                    prompt: "",
+                    image: "",
+                });
+            }
+        } catch (error) {
+            console.error("Error creating post:", error);
+            alert("Error creating post. Please try again.");
+        } finally {
+            setCreatePostLoading(false);
+        }
+    };
 
     return (
         <Container>
@@ -80,19 +134,24 @@ const CreatePost = () => {
                             text="Generate Image"
                             flex
                             leftIcon={<AutoAwesome />}
-                            isLoading={false}
+                            isLoading={generateImageLoading}
                             isDisabled={post.prompt === ""}
+                            onClick={() => generateImage()}
                         />
                         <Button
                             text="Post Image"
                             flex
                             type="secondary"
                             leftIcon={<CreateRounded />}
-                            isLoading={false}
-                            isDisabled={post.name === "" || post.prompt === "" || post.image === ""}
+                            isLoading={createPostLoading}
+                            isDisabled={
+                                post.name === "" || post.prompt === "" || post.image === ""
+                            }
+                            onClick={() => createPost()}
                         />
                     </div>
                 </GenerateImage>
+                <GeneratedImageCard image={post.image} loading={generateImageLoading} />
             </Wrapper>
         </Container>
     );

@@ -41,12 +41,13 @@ const Input = styled.input`
   }
 `;
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
     const [placeholder, setPlaceholder] = useState("");
     const [loopNum, setLoopNum] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
     const [text, setText] = useState("");
     const [delta, setDelta] = useState(200);
+    const [searchInput, setSearchInput] = useState("");
 
     const words = [
         "Search with prompt or tag...",
@@ -91,10 +92,22 @@ const SearchBar = () => {
         }
     };
 
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchInput(value);
+        if (onSearch) {
+            onSearch(value);
+        }
+    };
+
     return (
         <Container>
             <SearchOutlined />
-            <Input placeholder={text + (text.length === words[loopNum % words.length].length && !isDeleting ? "" : "|")} />
+            <Input 
+                placeholder={text + (text.length === words[loopNum % words.length].length && !isDeleting ? "" : "|")}
+                value={searchInput}
+                onChange={handleSearchChange}
+            />
         </Container>
     );
 };
