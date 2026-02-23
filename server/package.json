@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "\"This is the server for the AI Image Generator App.\"",
   "license": "ISC",
-  "author": "",
+  "author": "Manobalan M",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {

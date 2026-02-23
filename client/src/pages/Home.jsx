@@ -68,25 +68,28 @@ const CardWrapper = styled.div`
 `;
 
 const Home = () => {
-    return (
-        <Container>
-            <Headline>
-                Explore popular posts in the Community!
-                <Span>⦾ Generated with AI ⦾</Span>
-            </Headline>
-            <SearchBar />
-            <Wrapper>
-                <CardWrapper>
-                    <ImageCard />
-                    <ImageCard />
-                    <ImageCard />
-                    <ImageCard />
-                    <ImageCard />
-                    <ImageCard />
-                </CardWrapper>
-            </Wrapper>
-        </Container>
-    );
+
+  const item = {
+    photo: "https://i.pinimg.com/736x/39/e1/2f/39e12f6e6b51eccb7bdb929681043141.jpg",
+    author: "Manobalan",
+    prompt: "I am Marcus Aurelius!",
+  }
+
+  return (
+    <Container>
+      <Headline>
+        Explore popular posts in the Community!
+        <Span>⦾ Generated with AI ⦾</Span>
+      </Headline>
+      <SearchBar />
+      <Wrapper>
+        <CardWrapper>
+          <ImageCard item={item} />
+
+        </CardWrapper>
+      </Wrapper>
+    </Container>
+  );
 };
 
 export default Home;

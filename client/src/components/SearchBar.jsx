@@ -15,7 +15,7 @@ const Container = styled.div`
   color: ${({ theme }) => theme.text_secondary};
   background: ${({ theme }) => theme.bgLight + "40"};
   backdrop-filter: blur(4px);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 
   &:hover {
     border-color: ${({ theme }) => theme.primary};
