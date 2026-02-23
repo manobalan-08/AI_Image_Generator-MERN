@@ -1,0 +1,17 @@
+export const darkTheme = {
+    bg: "#18191c",
+    bgLight: "#1C1E27",
+    primary: "#854CE3",
+    text_primary: "#F2F3F4",
+    text_secondary: "#b1b2b3",
+    card: "#171721",
+    card_light: "#191924",
+    button: "#854CE3",
+    white: "#FFFFFF",
+    black: "#000000",
+    navbar: "#1C1E27",
+    arrow: "#AFAFB5",
+    menu: "#373737",
+    secondary: "#efdbff",
+    error: "#ff4d4f",
+};
